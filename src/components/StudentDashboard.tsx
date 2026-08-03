@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Student } from '../types';
 import { Language, translations } from '../utils/i18n';
+import { buildXaiInsight } from '../utils/xaiModel';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -142,7 +143,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
     cgpa: s.cgpa > 0 ? s.cgpa : null,
   }));
 
-  const shapChartData = (student.shapFeatures || []).map(f => ({
+  const xaiInsight = buildXaiInsight(student);
+
+  const shapChartData = (xaiInsight.shapFeatures || []).map(f => ({
     name: (f.featureName || '').length > 22 ? (f.featureName || '').substring(0, 20) + '...' : (f.featureName || ''),
     fullName: f.featureName || '',
     value: f.shapValue || 0,
@@ -317,8 +320,16 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 onClick={() => onOpenChatbotWithQuery('Explain SHAP values and how to improve my grade')}
                 className="text-xs text-[#0071E3] hover:underline font-semibold cursor-pointer"
               >
-                Ask EduBrain →
+                Ask Assistant →
               </button>
+            </div>
+
+            <div className="rounded-2xl border border-[#DCEBFF] bg-[#F8FBFF] dark:bg-[#0F172A]/60 p-3 mb-4 text-xs text-[#0F172A] dark:text-[#E2E8F0]">
+              <div className="font-semibold text-[#2563EB] mb-1">XAI summary</div>
+              <p className="leading-relaxed">{xaiInsight.summary}</p>
+              <div className="mt-2 text-[#64748B] dark:text-[#94A3B8]">
+                <span className="font-semibold">Suggested next step:</span> {xaiInsight.recommendedAction}
+              </div>
             </div>
 
             <div className="h-52 w-full mb-4">
@@ -346,7 +357,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
             {/* Plain English XAI Insights List */}
             <div className="space-y-2 pt-2 border-t border-black/[0.06] dark:border-white/[0.08]">
-              {(student.shapFeatures || []).map((f, idx) => (
+              {(xaiInsight.shapFeatures || []).map((f, idx) => (
                 <div key={idx} className={`p-3 rounded-2xl border text-xs flex items-start gap-2.5 ${
                   f.isNegative 
                     ? 'bg-[#FF3B30]/10 text-[#FF3B30] border-[#FF3B30]/20' 

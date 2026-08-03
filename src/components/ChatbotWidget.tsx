@@ -14,9 +14,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
     {
       id: 'm-1',
       sender: 'bot',
-      text: `Hello ${currentStudent.name}! I am your offline LLM-free EduBrain AI Assistant. I can answer questions about CGPA formulas, attendance rules, XAI SHAP predictions, and emergency support helplines. How can I help you today?`,
+      text: `Ciao ${currentStudent.name}! Sono l'assistente di EduStream e posso aiutarti con CGPA, presenze, spiegazioni sugli indicatori e supporto accademico. Se vuoi, partiamo da una domanda semplice: cosa ti interessa capire oggi?`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      quickReplies: ['CGPA Formula', 'Attendance Rules', 'Why is my grade dropping?', 'Emergency Helplines']
+      quickReplies: ['Formula CGPA', 'Regole di frequenza', 'Perché il mio rendimento sta calando?', 'Contatti utili']
     }
   ]);
   const [inputText, setInputText] = useState<string>('');
@@ -65,34 +65,31 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-[#5A5A40] hover:bg-[#4A4A35] text-white rounded-2xl shadow-xl shadow-[#5A5A40]/20 transition-all font-semibold text-xs cursor-pointer group hover:scale-105 border border-[#4A4A35]"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-2xl shadow-xl shadow-[#2563EB]/20 transition-all font-semibold text-xs cursor-pointer group hover:scale-105 border border-[#1D4ED8]"
         >
           <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center">
             <Bot className="w-4 h-4 text-white" />
           </div>
-          <span>Ask EduBrain Assistant</span>
-          <span className="w-2 h-2 rounded-full bg-[#F5C7A9] animate-pulse" />
+          <span>Chiedi all'assistente</span>
+          <span className="w-2 h-2 rounded-full bg-[#BFDBFE] animate-pulse" />
         </button>
       )}
 
       {/* Floating Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm sm:max-w-md bg-white dark:bg-[#25251C] rounded-2xl border border-[#DCDCCF] dark:border-[#3A3A2C] shadow-2xl overflow-hidden flex flex-col h-[520px] transition-all">
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm sm:max-w-md bg-white dark:bg-[#111827] rounded-2xl border border-[#DCEBFF] dark:border-white/10 shadow-2xl overflow-hidden flex flex-col h-[520px] transition-all">
           
           {/* Header */}
-          <div className="p-4 bg-[#5A5A40] text-white flex items-center justify-between shadow-xs">
+          <div className="p-4 bg-[#2563EB] text-white flex items-center justify-between shadow-xs">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold font-serif text-xs">EduBrain Assistant</h3>
-                  <span className="text-[10px] px-1.5 py-0.2 bg-[#4A4A35] rounded text-[#F5C7A9] font-mono">
-                    LLM-Free
-                  </span>
+                  <h3 className="font-semibold text-xs">Assistente EduStream</h3>
                 </div>
-                <p className="text-[10px] text-white/80">Rule-Based NLP & XAI Parser Engine</p>
+                <p className="text-[10px] text-white/80">Supporto gentile per studenti e docenti</p>
               </div>
             </div>
 
@@ -114,7 +111,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#F5F5F0]/60 dark:bg-[#1E1E16] text-xs">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#F8FBFF] dark:bg-[#0F172A] text-xs">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -123,13 +120,13 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
                 <div
                   className={`max-w-[85%] p-3 rounded-2xl whitespace-pre-wrap ${
                     m.sender === 'user'
-                      ? 'bg-[#5A5A40] text-white rounded-br-none shadow-xs'
-                      : 'bg-white dark:bg-[#25251C] text-[#2D2D1F] dark:text-[#EBEBE0] border border-[#DCDCCF] dark:border-[#3A3A2C] rounded-bl-none shadow-xs'
+                      ? 'bg-[#2563EB] text-white rounded-br-none shadow-xs'
+                      : 'bg-white dark:bg-[#111827] text-[#0F172A] dark:text-[#E2E8F0] border border-[#DCEBFF] dark:border-white/10 rounded-bl-none shadow-xs'
                   }`}
                 >
                   <p className="leading-relaxed">{m.text}</p>
                 </div>
-                <span className="text-[9px] text-[#8A8A70] mt-1 px-1">
+                <span className="text-[9px] text-[#64748b] dark:text-[#94a3b8] mt-1 px-1">
                   {m.timestamp}
                 </span>
 
@@ -140,7 +137,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
                       <button
                         key={rIdx}
                         onClick={() => handleSendMessage(reply)}
-                        className="text-[11px] px-2.5 py-1 bg-[#EBEBE0] dark:bg-[#3A3A2C] text-[#2D2D1F] dark:text-[#EBEBE0] rounded-lg border border-[#DCDCCF] dark:border-[#4A4A3B] hover:bg-[#DCDCCF] transition-colors font-medium text-left cursor-pointer"
+                        className="text-[11px] px-2.5 py-1 bg-[#EFF6FF] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#E2E8F0] rounded-lg border border-[#DBEAFE] dark:border-white/10 hover:bg-[#DBEAFE] dark:hover:bg-[#334155] transition-colors font-medium text-left cursor-pointer"
                       >
                         ⚡ {reply}
                       </button>
@@ -153,7 +150,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
           </div>
 
           {/* Input Bar */}
-          <div className="p-3 bg-white dark:bg-[#25251C] border-t border-[#DCDCCF] dark:border-[#3A3A2C]">
+          <div className="p-3 bg-white dark:bg-[#111827] border-t border-[#DCEBFF] dark:border-white/10">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -165,13 +162,13 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Ask about CGPA, SHAP, attendance, helplines..."
-                className="flex-1 px-3.5 py-2 bg-[#F5F5F0] dark:bg-[#2D2D22] border border-[#DCDCCF] dark:border-[#3A3A2C] focus:border-[#5A5A40] rounded-xl text-xs text-[#2D2D1F] dark:text-[#EBEBE0] focus:outline-none"
+                placeholder="Scrivi una domanda su CGPA, presenze o supporto..."
+                className="flex-1 px-3.5 py-2 bg-[#F8FBFF] dark:bg-[#0F172A] border border-[#DCEBFF] dark:border-white/10 focus:border-[#2563EB] rounded-xl text-xs text-[#0F172A] dark:text-[#E2E8F0] focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="p-2 bg-[#5A5A40] hover:bg-[#4A4A35] disabled:opacity-50 text-white rounded-xl transition-colors cursor-pointer"
+                className="p-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white rounded-xl transition-colors cursor-pointer"
               >
                 <Send className="w-4 h-4" />
               </button>

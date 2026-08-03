@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserRole, Student } from '../types';
-import { LogOut, PhoneCall, Search, Sun, Moon, Globe, Sparkles } from 'lucide-react';
+import { LogOut, PhoneCall, Sun, Moon, Globe, Sparkles } from 'lucide-react';
 import { Language, translations } from '../utils/i18n';
 
 interface HeaderProps {
@@ -44,36 +44,22 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16 gap-4">
           
           {/* Left Logo and Title */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#0071E3] text-white flex items-center justify-center font-semibold text-lg shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#2563EB] text-white flex items-center justify-center font-semibold text-lg shadow-sm shrink-0">
               
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-[#1D1D1F] dark:text-[#F5F5F7] tracking-tight text-base">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 whitespace-nowrap min-w-0">
+                <span className="font-semibold text-[#0f172a] dark:text-[#f8fafc] tracking-tight text-base sm:text-[15px] whitespace-nowrap">
                   {t.appName}
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-[#0071E3]/10 text-[#0071E3] dark:bg-[#0071E3]/20 dark:text-[#3898FF] border border-[#0071E3]/20 uppercase tracking-wider">
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-[#2563EB]/10 text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#60A5FA] border border-[#2563EB]/20 uppercase tracking-wider whitespace-nowrap">
                   Random Forest ML
                 </span>
               </div>
-              <p className="text-[11px] text-[#86868B] hidden sm:block">
+              <p className="text-[11px] text-[#64748b] dark:text-[#94a3b8] hidden sm:block whitespace-nowrap">
                 {t.appSubName}
               </p>
-            </div>
-          </div>
-
-          {/* Middle Search Bar */}
-          <div className="flex-1 max-w-sm hidden md:block">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#86868B]" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                className="w-full pl-10 pr-4 py-1.5 bg-[#F5F5F7] dark:bg-[#2C2C2E] border border-black/[0.06] dark:border-white/[0.08] focus:border-[#0071E3] rounded-full text-xs text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none transition-all"
-              />
             </div>
           </div>
 

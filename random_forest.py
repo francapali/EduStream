@@ -7,6 +7,9 @@ from database import DB_PATH, get_connection, init_db
 
 init_db()
 
+_MODEL_CACHE = None
+_MODEL_X_TRAIN = None
+
 class DecisionNode:
     def __init__(self, feature_idx=None, threshold=None, left=None, right=None, value=None):
         self.feature_idx = feature_idx
@@ -102,7 +105,7 @@ class RandomForestRegressorClassifier:
     """
     Random Forest Ensemble model for student trajectory prediction & SHAP attribution
     """
-    def __init__(self, n_estimators=30, max_depth=6):
+    def __init__(self, n_estimators=20, max_depth=6):
         self.n_estimators = n_estimators
         self.max_depth = max_depth
         self.trees = []
@@ -161,6 +164,11 @@ class RandomForestRegressorClassifier:
 
 
 def train_model_from_db():
+    global _MODEL_CACHE, _MODEL_X_TRAIN
+
+    if _MODEL_CACHE is not None and _MODEL_X_TRAIN is not None:
+        return _MODEL_CACHE, _MODEL_X_TRAIN
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -169,8 +177,14 @@ def train_model_from_db():
            study_hours_per_week, backlogs_count, stress_index, predicted_cgpa
     FROM students;
     """)
-
     rows = cursor.fetchall()
+
+    cursor.execute("""
+    SELECT overall_attendance, mid_sem_score, quiz1_score, quiz2_score,
+           study_hours_per_week, backlogs_count, stress_index, predicted_cgpa
+    FROM test_students;
+    """)
+    test_rows = cursor.fetchall()
     conn.close()
 
     X = []
@@ -179,8 +193,24 @@ def train_model_from_db():
         X.append([r[0], r[1], r[2], r[3], r[4], r[5], r[6]])
         y.append(r[7])
 
-    rf = RandomForestRegressorClassifier(n_estimators=30, max_depth=6)
+    rf = RandomForestRegressorClassifier(n_estimators=20, max_depth=6)
     rf.fit(X, y)
+
+    if test_rows:
+        test_X = []
+        test_y = []
+        for r in test_rows:
+            test_X.append([r[0], r[1], r[2], r[3], r[4], r[5], r[6]])
+            test_y.append(r[7])
+
+        preds = [rf.predict(x) for x in test_X]
+        mae = sum(abs(preds[i] - test_y[i]) for i in range(len(test_y))) / float(len(test_y))
+        mse = sum((preds[i] - test_y[i]) ** 2 for i in range(len(test_y))) / float(len(test_y))
+        rmse = math.sqrt(mse)
+        print(f"Model trained on {len(X)} training rows and evaluated on {len(test_y)} test rows | MAE={mae:.3f} | MSE={mse:.3f} | RMSE={rmse:.3f}", file=sys.stderr)
+
+    _MODEL_CACHE = rf
+    _MODEL_X_TRAIN = X
     return rf, X
 
 

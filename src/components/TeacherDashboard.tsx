@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 
 import { Language, translations } from '../utils/i18n';
+import { buildXaiInsight } from '../utils/xaiModel';
 
 interface TeacherDashboardProps {
   students: Student[];
@@ -100,14 +101,26 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
     { name: 'In Critical Difficulty', value: scenarioCounts.in_difficulty, color: '#FF3B30' },
   ];
 
-  // Aggregate SHAP factors across the batch
-  const batchShapFactors = [
-    { factor: 'Lab Attendance Drop (<70%)', impactCount: students.filter(s => s.labAttendance < 70).length, avgShap: -0.58 },
-    { factor: 'Quiz 2 Absence / Low Marks', impactCount: 4, avgShap: -0.42 },
-    { factor: 'Mid-Sem Score Failure (<50%)', impactCount: 3, avgShap: -0.45 },
-    { factor: 'Engineering Math Backlog', impactCount: 2, avgShap: -0.35 },
-    { factor: 'High Lecture Attendance (90%+)', impactCount: students.filter(s => s.lectureAttendance >= 90).length, avgShap: +0.32 },
-  ];
+  // Aggregate XAI factors across the batch from the real student signal
+  const batchShapFactors = Object.entries(
+    students.reduce<Record<string, { count: number; totalImpact: number }>>((acc, student) => {
+      const insight = buildXaiInsight(student);
+      const keyDriver = insight.topNegativeFeature?.featureName ?? 'Stable trajectory';
+      if (!acc[keyDriver]) {
+        acc[keyDriver] = { count: 0, totalImpact: 0 };
+      }
+      acc[keyDriver].count += 1;
+      acc[keyDriver].totalImpact += insight.topNegativeFeature?.shapValue ?? 0;
+      return acc;
+    }, {})
+  )
+    .map(([factor, stats]) => ({
+      factor,
+      impactCount: stats.count,
+      avgShap: Number((stats.totalImpact / stats.count).toFixed(2))
+    }))
+    .sort((a, b) => b.impactCount - a.impactCount)
+    .slice(0, 5);
 
   return (
     <div className="space-y-6 pb-12 text-[#1D1D1F] dark:text-[#F5F5F7]">
@@ -192,26 +205,26 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
       {/* Batch What-If Simulator Section (Visible when what_if tab is selected or as part of overview) */}
       {(activeTab === 'what_if' || activeTab === 'overview') && (
-        <div className="bg-[#1C1C1E] rounded-[24px] p-6 text-white shadow-xl border border-white/[0.12] relative overflow-hidden">
+        <div className="bg-white/95 dark:bg-[#1C1C1E] rounded-[24px] p-6 text-[#0F172A] dark:text-white shadow-xl border border-[#DCEBFF] dark:border-white/[0.12] relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-[#0071E3]" />
+              <h3 className="text-base font-semibold text-[#0F172A] dark:text-white flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-[#2563EB]" />
                 {t.whatIfTitle} (Macro Batch Sensitivity)
               </h3>
-              <p className="text-xs text-[#86868B]">
+              <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
                 Simulate how hypothetical shifts in attendance discipline or assessment scores impact total at-risk student count.
               </p>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-[#86868B] uppercase font-semibold block">Simulated At-Risk Count</span>
-              <span className="text-2xl font-bold text-[#34C759]">
+              <span className="text-[10px] text-[#64748B] dark:text-[#94A3B8] uppercase font-semibold block">Simulated At-Risk Count</span>
+              <span className="text-2xl font-bold text-[#16A34A] dark:text-[#34C759]">
                 {Math.max(0, totalAtRisk + (batchSimAttendanceDelta < 0 ? 2 : batchSimAttendanceDelta > 0 ? -2 : 0) + (batchSimMidSemDelta < 0 ? 1 : batchSimMidSemDelta > 0 ? -1 : 0))} Students
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 bg-[#F8FBFF] dark:bg-white/5 p-4 rounded-2xl border border-[#DCEBFF] dark:border-white/10">
             <div>
               <div className="flex justify-between text-xs mb-1 font-semibold">
                 <span>Batch Attendance Shift</span>

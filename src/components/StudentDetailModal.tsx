@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Student } from '../types';
-import { SCENARIO_DETAILS, getScenarioDetails } from '../data/studentsData';
+import { getScenarioDetails } from '../data/studentsData';
+import { buildXaiInsight } from '../utils/xaiModel';
 import { 
   X, 
   Sparkles, 
@@ -27,13 +28,14 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   onClose,
   onAddIntervention
 }) => {
-  if (!student) return null;
-
   const [actionTaken, setActionTaken] = useState<string>('Attendance Warning Issued');
   const [notes, setNotes] = useState<string>('');
   const [showForm, setShowForm] = useState<boolean>(false);
 
+  if (!student) return null;
+
   const scenarioDetails = getScenarioDetails(student.scenario);
+  const xaiInsight = buildXaiInsight(student);
 
   const handleSubmitIntervention = (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,10 +119,38 @@ export const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
           <div className="space-y-3">
             <h3 className="font-semibold text-[#1D1D1F] dark:text-[#F5F5F7] flex items-center gap-2 text-sm">
               <Sparkles className="w-4 h-4 text-[#0071E3]" />
-              XAI SHAP Diagnostic Drivers for {student.name}
+              XAI explanation for {student.name}
             </h3>
+
+            <div className="rounded-2xl border border-[#0071E3]/20 bg-[#F8FBFF] dark:bg-[#0F172A]/60 p-3 space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#0071E3]">Model forecast</p>
+                  <p className="text-sm font-semibold text-[#1D1D1F] dark:text-[#F5F5F7]">Predicted CGPA: {xaiInsight.predictedCgpa.toFixed(2)} / 10.0</p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3] text-[10px] font-semibold">
+                  {student.riskLevel}
+                </span>
+              </div>
+              <p className="text-[11px] leading-relaxed text-[#334155] dark:text-[#CBD5E1]">{xaiInsight.summary}</p>
+              <p className="text-[11px] leading-relaxed text-[#475569] dark:text-[#94A3B8]">
+                <span className="font-semibold text-[#1D1D1F] dark:text-[#F5F5F7]">Suggested next step:</span> {xaiInsight.recommendedAction}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="p-3 rounded-2xl border border-[#34C759]/20 bg-[#34C759]/10 text-[#1F7A3D] dark:text-[#86EFAC]">
+                <p className="text-[10px] font-semibold uppercase tracking-wider">Main positive driver</p>
+                <p className="mt-1 font-semibold text-sm">{xaiInsight.topPositiveFeature?.featureName || 'No strong positive driver'}</p>
+              </div>
+              <div className="p-3 rounded-2xl border border-[#FF3B30]/20 bg-[#FF3B30]/10 text-[#A61D1D] dark:text-[#FCA5A5]">
+                <p className="text-[10px] font-semibold uppercase tracking-wider">Main concern</p>
+                <p className="mt-1 font-semibold text-sm">{xaiInsight.topNegativeFeature?.featureName || 'No strong concern detected'}</p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-2">
-              {(student.shapFeatures || []).map((f, idx) => (
+              {(xaiInsight.shapFeatures || []).map((f, idx) => (
                 <div key={idx} className={`p-3 rounded-2xl border flex items-start gap-3 ${
                   f.isNegative 
                     ? 'bg-[#FF3B30]/10 text-[#FF3B30] border-[#FF3B30]/20' 

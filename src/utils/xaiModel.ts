@@ -1,5 +1,16 @@
 import { Student, ShapFeature, ScenarioType } from '../types';
 
+export interface XaiInsightSummary {
+  predictedCgpa: number;
+  shapFeatures: ShapFeature[];
+  scenario: ScenarioType;
+  riskLevel: Student['riskLevel'];
+  topPositiveFeature: ShapFeature | null;
+  topNegativeFeature: ShapFeature | null;
+  summary: string;
+  recommendedAction: string;
+}
+
 export function classifyStudentScenario(cgpa: number, attendance: number): ScenarioType {
   if (cgpa >= 9.0 && attendance >= 85) {
     return 'perfect';
@@ -230,5 +241,45 @@ export function generateDynamicShap(
     shapFeatures: features,
     scenario,
     riskLevel
+  };
+}
+
+export function buildXaiInsight(
+  student: Student,
+  customAttendance?: number,
+  customMidSemScore?: number,
+  customQuiz2Score?: number
+): XaiInsightSummary {
+  const base = generateDynamicShap(student, customAttendance, customMidSemScore, customQuiz2Score);
+  const positiveFeatures = [...base.shapFeatures].filter((f) => !f.isNegative).sort((a, b) => b.shapValue - a.shapValue);
+  const negativeFeatures = [...base.shapFeatures].filter((f) => f.isNegative).sort((a, b) => a.shapValue - b.shapValue);
+
+  const topPositiveFeature = positiveFeatures[0] ?? null;
+  const topNegativeFeature = negativeFeatures[0] ?? null;
+
+  let summary = 'The model is mostly balanced, with no single driver dominating the prediction.';
+  if (topNegativeFeature && topPositiveFeature) {
+    summary = `${topNegativeFeature.featureName} is the strongest drag on the prediction, while ${topPositiveFeature.featureName} is the main support.}`;
+  } else if (topNegativeFeature) {
+    summary = `${topNegativeFeature.featureName} is the strongest drag on the prediction.`;
+  } else if (topPositiveFeature) {
+    summary = `${topPositiveFeature.featureName} is the strongest support for the prediction.`;
+  }
+
+  let recommendedAction = 'Maintain the current rhythm and keep a short weekly review routine.';
+  if (topNegativeFeature?.category === 'Attendance') {
+    recommendedAction = 'Recover attendance first by attending the next lectures and labs, then protect the next assessment cycle.';
+  } else if (topNegativeFeature?.category === 'Assessment') {
+    recommendedAction = 'Focus on the next assessment with targeted revision and extra practice on the weakest topic.';
+  } else if (topNegativeFeature?.category === 'Historical') {
+    recommendedAction = 'Stabilize the recent trend with a small recovery plan and regular check-ins.';
+  }
+
+  return {
+    ...base,
+    topPositiveFeature,
+    topNegativeFeature,
+    summary,
+    recommendedAction
   };
 }

@@ -5,23 +5,29 @@
 @layer base {
   :root {
     color-scheme: light dark;
-  }
-  
-  body {
-    font-family: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Arial, sans-serif;
-    background-color: #F5F5F7;
-    color: #1D1D1F;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: "Inter", "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Arial, sans-serif;
   }
 
-  html.dark, body.dark {
-    background-color: #000000;
-    color: #F5F5F7;
+  body {
+    font-family: inherit;
+    background: linear-gradient(180deg, #f6f9ff 0%, #eef4ff 100%);
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background 180ms ease, color 180ms ease;
+  }
+
+  html.dark body {
+    background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+    color: #f8fafc;
+  }
+
+  ::selection {
+    background: #2563eb;
+    color: white;
   }
 }
 
-/* Custom Apple Smooth Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -30,9 +36,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(134, 134, 139, 0.3);
+  background: rgba(100, 116, 139, 0.28);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(134, 134, 139, 0.5);
+  background: rgba(100, 116, 139, 0.42);
 }

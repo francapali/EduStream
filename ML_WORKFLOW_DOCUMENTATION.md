@@ -1,13 +1,8 @@
-# EduStream Analytics — Current workflow and datasets
+# EduStream Analytics — Workflow and datasets
 
 ## Overview
-EduStream is an educational platform that combines a React frontend, an Express/Node.js backend, and a Python engine for academic performance prediction and risk-scenario simulation.
 
-The project is configured to work with two separate datasets:
-- Training set: 220 synthetic students used to train the model
-- Demo set: 30 synthetic students used for live presentations and the app’s demo flow
-
----
+EduStream is an educational analytics platform that connects a React frontend, an Express backend, and a Python machine learning engine to help faculty and students understand academic performance, forecast CGPA, and explore support actions.
 
 ## Current architecture
 
@@ -21,14 +16,12 @@ Main components:
 - ML engine: custom Random Forest implementation in Python
 - Database: SQLite with the academic_analytics.db file
 
----
+## Model and training flow
 
-## ML engine
+The model is implemented in random_forest.py and does not rely on scikit-learn.
 
-The current model is implemented in [random_forest.py](random_forest.py) and does not depend on scikit-learn.
-
-### Training data
-The model is trained by reading records from the students table, which contains 220 synthetic students with fields such as:
+### Input features
+The training rows use the following student indicators:
 - overall_attendance
 - mid_sem_score
 - quiz1_score
@@ -36,77 +29,81 @@ The model is trained by reading records from the students table, which contains 
 - study_hours_per_week
 - backlogs_count
 - stress_index
-- predicted_cgpa
+- predicted_cgpa (target)
 
 ### Model configuration
-- number of trees: 30
+- number of trees: 20
 - maximum depth: 6
-- target: predicted_cgpa
+- prediction target: predicted_cgpa
 
-The model also produces a feature-impact estimate through a SHAP-like mechanism based on the difference between a sample prediction and a baseline.
+### Evaluation strategy
+The model is trained on the students table and evaluated on the test_students table. The training script reports:
+- MAE
+- MSE
+- RMSE
 
----
+## Dataset structure
 
-## Datasets and demo cohort
-
-The database is initialized by [database.py](database.py).
+The database bootstrap is handled by database.py.
 
 ### Training set
 - Table: students
-- Contents: 220 synthetic students
+- Contents: 12,000 synthetic students
 - Purpose: model training
 
-### Demo set
+### Test set
+- Table: test_students
+- Contents: 2,000 synthetic students
+- Purpose: evaluation and validation
+
+### Demo cohort
 - Table: demo_test_students
-- Contents: 30 synthetic students
-- Purpose: live presentation and UI-flow verification without using the full training set
+- Contents: 30 realistic synthetic students
+- Purpose: live presentation and UI exploration
 
-This separation provides:
-- a more realistic dataset for model training;
-- a lighter and more readable cohort for the demo.
+## Runtime flow
 
----
+1. The SQLite database is created or repaired if needed.
+2. The Python engine loads the data and trains the Random Forest model.
+3. The Express API exposes endpoints for health checks, student lists, predictions, simulation, and interventions.
+4. The frontend consumes those APIs and renders the academic dashboards.
 
-## Operational flow
+## API endpoints
 
-1. The database is created or rebuilt if the SQLite file is corrupted.
-2. The Python engine loads data from the database and trains the model.
-3. The Express API exposes endpoints such as:
-   - GET /api/health
-   - GET /api/students
-   - GET /api/predict/:studentId
-   - POST /api/simulate
-   - POST /api/interventions
-4. The frontend uses these endpoints to display dashboards, predictions, and simulators.
-
----
+- GET /api/health
+- GET /api/students
+- GET /api/predict/:studentId
+- POST /api/simulate
+- POST /api/interventions
 
 ## Local execution
 
-### Start backend/frontend
+### Install dependencies
+
 ```bash
 npm install
+```
+
+### Start the application
+
+```bash
 npm run dev
 ```
 
-The server will be available at:
-```text
-http://127.0.0.1:3000
-```
+Open the app at:
+- http://127.0.0.1:3000
 
 ### Quick verification
+
 ```bash
-python random_forest.py get_students
+.\.venv\Scripts\python.exe random_forest.py get_students
 ```
 
-Or through the browser/API:
+Or via browser/API:
 - http://127.0.0.1:3000/api/health
 - http://127.0.0.1:3000/api/students
 
----
-
 ## Operational notes
 
-- If the SQLite file is damaged, the system attempts to recreate it automatically.
-- The UI uses the 30-student demo set for live visualization.
-- The training set remains separate and is not used as the presentation cohort.
+- If the SQLite file is corrupted, the application attempts to recover it automatically.
+- The UI uses the demo cohort for presentation mode, while the model uses the larger training and test tables.

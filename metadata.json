@@ -1,0 +1,6 @@
+{
+  "name": "Academic Progress & XAI Analyzer",
+  "description": "Real-time student performance dashboard with semester-wise CGPA analytics, XAI SHAP feature breakdown, at-risk early intervention, dual role-based access, and an intelligent LLM-free assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

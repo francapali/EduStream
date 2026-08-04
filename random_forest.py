@@ -306,10 +306,10 @@ def get_all_students_from_db():
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) FROM demo_test_students;")
-    demo_count = cursor.fetchone()[0]
-    if demo_count > 0:
-        cursor.execute("SELECT * FROM demo_test_students ORDER BY batch_rank;")
+    cursor.execute("SELECT COUNT(*) FROM test_students;")
+    test_count = cursor.fetchone()[0]
+    if test_count > 0:
+        cursor.execute("SELECT * FROM test_students ORDER BY batch_rank LIMIT 30;")
     else:
         cursor.execute("SELECT * FROM students;")
     rows = cursor.fetchall()

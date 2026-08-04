@@ -58,7 +58,7 @@ The database bootstrap is handled by database.py.
 
 ### Demo cohort
 - Table: demo_test_students
-- Contents: 30 realistic synthetic students
+- Contents: 30 students from the test set
 - Purpose: live presentation and UI exploration
 
 ## Runtime flow

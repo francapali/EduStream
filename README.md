@@ -22,12 +22,11 @@ EduStream is an educational analytics platform for universities and academic sup
 The project now uses a much larger synthetic dataset:
 - Training set: 12,000 student records
 - Test set: 2,000 student records
-- Demo set: 30 realistic student profiles for presentation flows
+- Demo set: 30 student profiles from the test set
 
 The database is initialized automatically by Python and includes:
 - students: training data
 - test_students: evaluation data
-- demo_test_students: demo cohort shown in the UI
 - interventions: faculty actions and follow-ups
 - shap_features: feature-impact explanations
 
@@ -66,5 +65,5 @@ Then open:
 ## Notes
 
 - The model is trained from the students table and evaluated on test_students.
-- The UI uses demo_test_students for the live demo experience.
+- The UI uses the first 30 rows from test_students for the live demo experience.
 - The main ML logic is in random_forest.py and the database bootstrap is handled by database.py.

@@ -184,14 +184,14 @@ ${details.timeManagementTips.map(t => `• ${t}`).join('\n')}`,
 
   // Default fallback answer
   return {
-    answer: `� **Assistente EduStream:**
-Sono qui per aiutarti in modo chiaro e disponibile. Posso spiegarti come funziona il CGPA, cosa significa la tua situazione accademica, quali sono le regole di frequenza e dove cercare supporto se ti serve.
+    answer: `🤖 **EduStream Assistant:**
+I’m here to help you clearly and supportively. I can explain how CGPA works, what your academic situation means, what the attendance rules are, and where to find support if you need it.
 
-Prova a chiedere ad esempio:
-• *"Come si calcola il CGPA?"*
-• *"Perché il mio rendimento sembra calare?"*
-• *"Quali sono le regole di frequenza?"*
-• *"Mostrami i numeri utili e i contatti"*`,
-    quickReplies: ['Formula CGPA', 'Regole di frequenza', 'Perché il mio rendimento sta calando?', 'Contatti utili']
+Try asking for example:
+• *"How is CGPA calculated?"*
+• *"Why does my performance seem to be dropping?"*
+• *"What are the attendance rules?"*
+• *"Show me the useful numbers and contacts"*`,
+    quickReplies: ['CGPA Formula', 'Attendance Rules', 'Why is my performance declining?', 'Useful Contacts']
   };
 }

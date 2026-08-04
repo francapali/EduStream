@@ -14,9 +14,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
     {
       id: 'm-1',
       sender: 'bot',
-      text: `Ciao ${currentStudent.name}! Sono l'assistente di EduStream e posso aiutarti con CGPA, presenze, spiegazioni sugli indicatori e supporto accademico. Se vuoi, partiamo da una domanda semplice: cosa ti interessa capire oggi?`,
+      text: `Hello ${currentStudent.name}! I’m the EduStream assistant and I can help you with CGPA, attendance, explanations of indicators, and academic support. If you want, we can start with a simple question: what would you like to understand today?`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      quickReplies: ['Formula CGPA', 'Regole di frequenza', 'Perché il mio rendimento sta calando?', 'Contatti utili']
+      quickReplies: ['CGPA Formula', 'Attendance Rules', 'Why is my performance declining?', 'Useful Contacts']
     }
   ]);
   const [inputText, setInputText] = useState<string>('');
@@ -70,7 +70,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
           <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center">
             <Bot className="w-4 h-4 text-white" />
           </div>
-          <span>Chiedi all'assistente</span>
+          <span>Ask the assistant</span>
           <span className="w-2 h-2 rounded-full bg-[#BFDBFE] animate-pulse" />
         </button>
       )}
@@ -87,9 +87,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-semibold text-xs">Assistente EduStream</h3>
+                  <h3 className="font-semibold text-xs">EduStream Assistant</h3>
                 </div>
-                <p className="text-[10px] text-white/80">Supporto gentile per studenti e docenti</p>
+                <p className="text-[10px] text-white/80">Friendly support for students and teachers</p>
               </div>
             </div>
 
@@ -162,7 +162,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ currentStudent, ex
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Scrivi una domanda su CGPA, presenze o supporto..."
+                placeholder="Ask a question about CGPA, attendance, or support..."
                 className="flex-1 px-3.5 py-2 bg-[#F8FBFF] dark:bg-[#0F172A] border border-[#DCEBFF] dark:border-white/10 focus:border-[#2563EB] rounded-xl text-xs text-[#0F172A] dark:text-[#E2E8F0] focus:outline-none"
               />
               <button
